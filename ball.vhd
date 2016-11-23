@@ -16,7 +16,6 @@ entity ball is
 	port (clk, reset: in std_logic;
 			padxbeg, padybeg, padxend, padyend: in std_logic_vector (9 downto 0);
 			xaddr, yaddr: in std_logic_vector (3 downto 0);
-			flags: out std_logic_vector (3 downto 0);
 			pixel: out std_logic_vector (23 downto 0);
 			death, point: out std_logic;
 			xbeg, ybeg, xend, yend: out std_logic_vector (9 downto 0) );
@@ -27,7 +26,7 @@ architecture behav of ball is
 	signal x: std_logic_vector(9 downto 0) := "0100110111";
 	signal y: std_logic_vector(9 downto 0) := "0000110010";
 	signal x2, y2: std_logic_vector(9 downto 0);
-	signal padCol, padSideCol, wallCol, ceilCol, dead, colReset: std_logic := '0';
+	signal dead: std_logic := '0';
 begin
 
 	-- assign signals
@@ -38,8 +37,6 @@ begin
 	xend <= x2;
 	yend <= y2;
 	death <= dead;
-	point <= padCol;
-	flags <= padCol & padSideCol & wallCol & ceilCol;
 	
 	-- asynchronously output a white square of pixels
 	process(xaddr, yaddr) begin
@@ -49,81 +46,31 @@ begin
 		end case;
 	end process;
 	
-	-- synchronously check for collision events (paddle top, paddle side, wall, ceiling, floor)
-	process(clk, reset, padxbeg, padybeg, padxend, padyend, x, y, x2, y2) begin
-	
-		if colReset = '1' then
+	-- synchronous point calculation
+	process(clk, reset, x, y, x2, y2, padxbeg, padybeg, padxend, padyend) begin
 		
-			padCol <= '0';
-			padSideCol <= '0';
-			ceilCol <= '0';
-			dead <= '0';
-			wallCol <= '0';
-		
+		if reset = '1' then
+			point <= '0';
 		elsif rising_edge(clk) then
-		
-			-- paddle top collision
-			if (y2 = (padybeg + 1)) and (x < padxend) and (x2 > padxbeg) then
-				padCol <= '1';
-				
-			-- paddle side collision
-			elsif ((x2 = padxbeg-1) or (x = padxend+1)) and ((y2 <= padybeg) and (y >= padyend)) then 
-				padSideCol <= '1';
-				
-			-- ceiling collision
-			elsif y <= 0 then
-				ceilCol <= '1';
-				
-			-- floor collision
-			elsif y2 >= 479 then
-				dead <= '1';
-				
-			-- wall collision
-			elsif (x <= 0) or (x2 >= 639) then
-				wallCol <= '1';
-	
+			if ((y2 = (padybeg + 1)) and (x < padxend) and (x2 > padxbeg)) then
+				point <= '1';
+			else
+				point <= '0';
 			end if;
-			
 		end if;
 		
 	end process;
 	
-	-- synchronously process collisions
-	-- NOTE: for upper corners, ceiling takes precedence over wall
-	-- NOTE: for lower corners, floor takes precedence over wall
-	process(clk, reset, padCol, padSideCol, wallCol, ceilCol) begin
+	-- synchronously check for collision events (paddle top, paddle side, wall, ceiling, floor)
+	process(clk, reset, padxbeg, padybeg, padxend, padyend, x, y, x2, y2) begin
 	
 		if reset = '1' then
 			dir <= "100";
 		
 		elsif rising_edge(clk) then
-			-- process collision with celing
-			if ceilCol = '1' then
-				case dir is
-					when "000" => dir <= "100"; -- N  => S
-					when "001" => dir <= "101"; -- NE => SW
-					when "111" => dir <= "011"; -- NW => SE
-					when others => dir <= "100"; -- invalid state goes to S
-				end case; 
-				colReset <= '1';
-				
-			-- process collision with wall
-			elsif wallCol = '1' then
-				case dir is
-					when "111" => dir <= "001"; -- NW => NE
-					when "001" => dir <= "111"; -- NE => NW
-					when "101" => dir <= "011"; -- SW => SE
-					when "011" => dir <= "101"; -- SE => SW
-					when "010" => dir <= "110"; -- E  => W
-					when "110" => dir <= "010"; -- W  => E
-					when others => dir <= "111"; -- invalid states goes to NW
-				end case;
-				colReset <= '1';
-				
-			-- process collision with paddle
-			elsif padCol = '1' then
-			
-				colReset <= '1';
+		
+			-- paddle top collision
+			if (y2 = (padybeg + 1)) and (x < padxend) and (x2 > padxbeg) then
 				
 				-- left third of paddle, NW
 				if x <= padxbeg + 42 then
@@ -135,36 +82,56 @@ begin
 					
 				-- right third of paddle, NE
 				else
-					dir <= "001";
-					
+					dir <= "001";	
 				end if;
-			
-			-- process collision with side of paddle
-			elsif padSideCol = '1' then
-			
-				colReset <= '1';
 				
+			end if;
+			
+			-- paddle side collision
+			if (x2 = padxbeg) or (x = padxend) then 
 				-- left side
 				if x2 = padxbeg then
 					dir <= "110"; -- W
 				
 				-- right side
 				else
-					dir <= "010"; -- E
-					
+					dir <= "010"; -- E	
 				end if;
-				
-			-- no collision processing needed
-			else
-				dir <= dir;
-				
+			end if;
+			
+			-- ceiling collision
+			if y = 0 then
+				case dir is
+					when "000" => dir <= "100"; -- N  => S
+					when "001" => dir <= "101"; -- NE => SW
+					when "111" => dir <= "011"; -- NW => SE
+					when others => dir <= "100"; -- invalid state goes to S
+				end case;
+			end if;
+			
+			-- floor collision
+			if y2 = 479 then
+				dead <= '1';
+			end if;
+			
+			-- wall collision
+			if (x = 0) or (x2 = 639) then
+				case dir is
+					when "111" => dir <= "001"; -- NW => NE
+					when "001" => dir <= "111"; -- NE => NW
+					when "101" => dir <= "011"; -- SW => SE
+					when "011" => dir <= "101"; -- SE => SW
+					when "010" => dir <= "110"; -- E  => W
+					when "110" => dir <= "010"; -- W  => E
+					when others => dir <= "111"; -- invalid states goes to NW
+				end case;
 			end if;
 			
 		end if;
 		
 	end process;
 	
-	-- synchronously determine movement, only when ball not dead
+	-- synchronously determine position, only when ball not dead
 	process(reset, dir, clk) begin
 	 
 		if reset = '1' then
