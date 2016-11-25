@@ -7,6 +7,7 @@
 - Current Problems:
  * Ball "sinks" into collision objects (timing issue between processes in ball module?)
  * Left Wall SW Collision and Right Wall SE Collision glitched (because of wall sinking)
+ * Paddle side collisions not registering
                     
 A basic Pong-like game. 
 
