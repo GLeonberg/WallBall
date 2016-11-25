@@ -16,7 +16,6 @@ entity ball is
 	port (clk, reset: in std_logic;
 			padxbeg, padybeg, padxend, padyend: in std_logic_vector (9 downto 0);
 			xaddr, yaddr: in std_logic_vector (3 downto 0);
-			dirc: out std_logic_vector (2 downto 0);
 			pixel: out std_logic_vector (23 downto 0);
 			death, point: out std_logic;
 			xbeg, ybeg, xend, yend: out std_logic_vector (9 downto 0) );
@@ -38,7 +37,6 @@ begin
 	xend <= x2;
 	yend <= y2;
 	death <= dead;
-	dirc <= dir;
 	
 	-- asynchronously output a white square of pixels
 	process(xaddr, yaddr) begin
@@ -54,7 +52,7 @@ begin
 		if reset = '1' then
 			point <= '0';
 		elsif rising_edge(clk) then
-			if ((y2 = (padybeg + 1)) and (x < padxend) and (x2 > padxbeg)) then
+			if y = 0 then
 				point <= '1';
 			else
 				point <= '0';
@@ -89,7 +87,7 @@ begin
 		
 			if dead = '0' then
 				-- paddle top collision
-				if (y2 = (padybeg + 2)) and (x < padxend) and (x2 > padxbeg) then
+				if (y2 = (padybeg + 4)) and (x < padxend) and (x2 > padxbeg) then
 					
 					-- left third of paddle, NW
 					if x <= padxbeg + 42 then
@@ -111,7 +109,7 @@ begin
 					end if;
 				
 				-- paddle side collision
-				elsif ((x2 = padxbeg-1) or (x = padxend+1)) and (y > padyend) and (y2 < padybeg) then 
+				elsif ((x2 = padxbeg-1) or (x = padxend+1)) and (y < padyend) and (y2 > padybeg) then 
 				
 					-- left side
 					if x2 = padxbeg-1 then
@@ -153,7 +151,7 @@ begin
 					end case;
 				
 				-- wall collision
-				elsif (x <= 0) or (x2 >= 639) then
+				elsif (x = 0) or (x2 = 639) then
 					case dir is
 						when "111" => 
 							dir <= "001"; -- NW => NE
@@ -167,13 +165,13 @@ begin
 							
 						when "101" => 
 							dir <= "011"; -- SW => SE
-							x <= x + 1;
-							y <= y + 1;
+							x <= x + 5;
+							y <= y + 5;
 							
 						when "011" => 
 							dir <= "101"; -- SE => SW
-							x <= x - 1;
-							y <= y + 1;
+							x <= x - 5;
+							y <= y + 5;
 							
 						when "010" => 
 							dir <= "110"; -- E  => W
@@ -186,7 +184,7 @@ begin
 							y <= y;
 							
 						when others => 
-							dir <= "111"; -- invalid states goes to NW
+							dir <= "111"; -- invalid states and NE go to NW
 							x <= x - 1;
 							y <= y - 1;
 							
@@ -205,7 +203,7 @@ begin
 							y <= y - 1;
 							
 						when "010" => -- E
-							x <= x - 1;
+							x <= x + 1;
 							y <= y;
 								
 						when "011" => -- SE
@@ -221,7 +219,7 @@ begin
 							y <= y + 1;
 								
 						when "110" => -- W
-							x <= x + 1;
+							x <= x - 1;
 							y <= y;
 								
 						when "111" => -- NW
