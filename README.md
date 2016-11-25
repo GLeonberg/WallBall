@@ -18,4 +18,6 @@ Every time the ball touches the ceiling, a point is scored.
 
 When the ball touches the floor, the ball stops moving.
 
+Single pixel blue border for screen position adjustment
+
 There are asynchronous pause and reset controls.
