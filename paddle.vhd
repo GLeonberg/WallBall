@@ -14,15 +14,17 @@ entity paddle is
 end paddle;
 
 architecture rom of paddle is
-	signal x: std_logic_vector (9 downto 0) := "0011111111";
-	signal y: std_logic_vector (9 downto 0) := "0110101110";
+	signal x, x2: std_logic_vector (9 downto 0) := "0011111111";
+	signal y, y2: std_logic_vector (9 downto 0) := "0110101110";
 begin
 
 	-- assign signals
 	xbeg <= x;
 	ybeg <= y;
-	xend <= x + 127;
-	yend <= y + 15;
+	x2 <= x + 127;
+	y2 <= y + 15;
+	xend <= x2;
+	yend <= y2;
 	
 	-- if keys pressed, update paddle position
 	process(ctrl, clk, reset) begin
@@ -37,7 +39,7 @@ begin
 				x <= x - 1;
 			end if;
 			
-			if ctrl(2) = '0' and x < 512 then
+			if ctrl(2) = '0' and x2 < 640 then
 				x <= x + 1;
 			end if;
 			
@@ -45,7 +47,7 @@ begin
 				y <= y - 1;
 			end if;
 			
-			if ctrl(0) = '0' and y < 464 then
+			if ctrl(0) = '0' and y2 < 480 then
 				y <= y + 1;
 			end if;
 			
