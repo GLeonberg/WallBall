@@ -13,7 +13,7 @@ A basic Pong-like game.
 
 Player moves the paddle in the xy plane using four buttons. 
 Ball movement and collisions are automatically handled.
-Collision zones are: left wall, right wall, ceiling, top of paddle.
+Collision zones are: left wall, right wall, ceiling, top of paddle, side of paddle.
 
 Every time the player hits the ball with the top of the paddle, a point is scored.
 
