@@ -1,11 +1,12 @@
 # WallBall
 
--- Current Status - Alpha
+- Current Status - Alpha
 
--- Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
+- Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
 
--- Current Problems: Ball "sinks" into collision objects (timing issue between processes in ball module?)
-                     Left Wall SW Collision and Right Wall SE Collision glitched (because of wall sinking)
+- Current Problems:
+ * Ball "sinks" into collision objects (timing issue between processes in ball module?)
+ * Left Wall SW Collision and Right Wall SE Collision glitched (because of wall sinking)
                     
 A basic Pong-like game. 
 
