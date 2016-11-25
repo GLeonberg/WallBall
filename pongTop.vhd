@@ -5,7 +5,7 @@ entity pongTop is
 	port (CLOCK_50: in std_logic;
 			KEY: in std_logic_vector (3 downto 0);
 			SW: in std_logic_vector (1 downto 0);
-			HEX0, HEX1: out std_logic_vector (6 downto 0);
+			HEX0, HEX1, HEX2: out std_logic_vector (6 downto 0);
 			LEDR: out std_logic_vector (0 downto 0);
 			VGA_R, VGA_G, VGA_B: out std_logic_vector (7 downto 0);
 			VGA_HS, VGA_VS: out std_logic;
@@ -63,6 +63,7 @@ architecture structural of pongTop is
 	port (clk, reset: in std_logic;
 			padxbeg, padybeg, padxend, padyend: in std_logic_vector (9 downto 0);
 			xaddr, yaddr: in std_logic_vector (3 downto 0);
+			dirc: out std_logic_vector (2 downto 0);
 			pixel: out std_logic_vector (23 downto 0);
 			death, point: out std_logic;
 			xbeg, ybeg, xend, yend: out std_logic_vector (9 downto 0) );
@@ -85,6 +86,7 @@ architecture structural of pongTop is
 	signal pxaddr: std_logic_vector (6 downto 0);
 	signal bpixel, ppixel: std_logic_vector (23 downto 0);
 	signal score: std_logic_vector (7 downto 0);
+	signal dir: std_logic_vector (2 downto 0);
 
 begin
 
@@ -119,12 +121,26 @@ begin
 	
 	-- ball module
 	bal: ball port map (	CLOCK_60, reset, pxbeg, pybeg, pxend, pyend, bxaddr, byaddr,
-								bpixel, dead, point, bxbeg, bybeg, bxend, byend);
+								dir, bpixel, dead, point, bxbeg, bybeg, bxend, byend);
 								
 	-- pixel generator
 	screen: screenGen port map (	vidOn, hcount, vcount, bxbeg, bybeg, bxend, byend,
 											pxbeg, pybeg, pxend, pyend, bpixel, ppixel, pxaddr,
 											pyaddr, bxaddr, byaddr, VGA_R, VGA_G, VGA_B);
+											
+	-- display current direction of ball to seven segment display
+	process(dir) begin
+		case dir is
+			when "000" => HEX2 <= "1111110"; -- N
+			when "001" => HEX2 <= "1111100"; -- NE
+			when "010" => HEX2 <= "1111001"; -- E
+			when "011" => HEX2 <= "1110011"; -- SE
+			when "100" => HEX2 <= "1110111"; -- S
+			when "101" => HEX2 <= "1100111"; -- SW
+			when "110" => HEX2 <= "1001111"; -- W
+			when others => HEX2 <= "1011110"; -- NW
+		end case;
+	end process;
 											
 
 end structural;
