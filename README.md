@@ -4,6 +4,8 @@
 
 -- Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
 
+-- Current Problems: Ball "sinks" into collision objects (timing issue between processes in ball module?)
+
 A basic Pong-like game. 
 
 Player moves the paddle in the xy plane using four buttons. 
