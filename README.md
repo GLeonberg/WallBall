@@ -5,7 +5,6 @@
 - Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
 
 - Current Problems:
- * Ball "sinks" into paddle (because of ball wait for current padddle position?)
  * Left Wall SW Collision and Right Wall SE Collision glitched
                     
 A basic Pong-like game. 
