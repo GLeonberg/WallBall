@@ -87,7 +87,7 @@ begin
 		
 			if dead = '0' then
 				-- paddle top collision
-				if (y2 = (padybeg + 4)) and (x < padxend) and (x2 > padxbeg) then
+				if (y2 = (padybeg-1)) and (x < padxend) and (x2 > padxbeg) then
 					
 					-- left third of paddle, NW
 					if x <= padxbeg + 42 then

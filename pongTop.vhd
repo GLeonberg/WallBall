@@ -5,8 +5,8 @@ entity pongTop is
 	port (CLOCK_50: in std_logic;
 			KEY: in std_logic_vector (3 downto 0);
 			SW: in std_logic_vector (1 downto 0);
-			HEX0, HEX1, HEX2: out std_logic_vector (6 downto 0);
-			LEDR: out std_logic_vector (3 downto 0);
+			HEX0, HEX1: out std_logic_vector (6 downto 0);
+			LEDR: out std_logic_vector (0 downto 0);
 			VGA_R, VGA_G, VGA_B: out std_logic_vector (7 downto 0);
 			VGA_HS, VGA_VS: out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N, VGA_CLK: out std_logic);
@@ -85,7 +85,6 @@ architecture structural of pongTop is
 	signal pxaddr: std_logic_vector (6 downto 0);
 	signal bpixel, ppixel: std_logic_vector (23 downto 0);
 	signal score: std_logic_vector (7 downto 0);
-	signal dir: std_logic_vector (2 downto 0);
 
 begin
 
@@ -125,23 +124,6 @@ begin
 	-- pixel generator
 	screen: screenGen port map (	vidOn, hcount, vcount, bxbeg, bybeg, bxend, byend,
 											pxbeg, pybeg, pxend, pyend, bpixel, ppixel, pxaddr,
-											pyaddr, bxaddr, byaddr, VGA_R, VGA_G, VGA_B);
-											
-	-- display current direction of ball to seven segment display
-	process(dir) begin
-		case dir is
-			when "000" => HEX2 <= "1111110"; -- N
-			when "001" => HEX2 <= "1111100"; -- NE
-			when "010" => HEX2 <= "1111001"; -- E
-			when "011" => HEX2 <= "1010011"; -- SE
-			when "100" => HEX2 <= "1110111"; -- S
-			when "101" => HEX2 <= "1100111"; -- SW
-			when "110" => HEX2 <= "1001111"; -- W
-			when others => HEX2 <= "1011110"; -- NW
-		end case;
-	end process;
-	
-	LEDR(3 downto 1) <= dir;
-											
+											pyaddr, bxaddr, byaddr, VGA_R, VGA_G, VGA_B);										
 
 end structural;
