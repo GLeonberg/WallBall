@@ -87,7 +87,7 @@ begin
 		
 			if dead = '0' then
 				-- paddle top collision
-				if (y2 = (padybeg-1)) and (x < padxend) and (x2 > padxbeg) then
+				if (y2 = (padybeg-1))  and (x < padxend) and (x2 > padxbeg) then
 					
 					-- left third of paddle, NW
 					if x <= padxbeg + 42 then
@@ -134,13 +134,13 @@ begin
 							y <= y + 1;
 							
 						when "001" => 
-							dir <= "101"; -- NE => SW
-							x <= x - 1;
+							dir <= "011"; -- NE => SE
+							x <= x + 1;
 							y <= y + 1;
 						
 						when "111" => 
-							dir <= "011"; -- NW => SE
-							x <= x + 1;
+							dir <= "101"; -- NW => SW
+							x <= x - 1;
 							y <= y + 1;
 						
 						when others => 
@@ -165,13 +165,13 @@ begin
 							
 						when "101" => 
 							dir <= "011"; -- SW => SE
-							x <= x + 5;
-							y <= y + 5;
+							x <= x + 1;
+							y <= y + 1;
 							
 						when "011" => 
 							dir <= "101"; -- SE => SW
-							x <= x - 5;
-							y <= y + 5;
+							x <= x - 1;
+							y <= y + 1;
 							
 						when "010" => 
 							dir <= "110"; -- E  => W
@@ -207,7 +207,7 @@ begin
 							y <= y;
 								
 						when "011" => -- SE
-							x <= x - 1;
+							x <= x + 1;
 							y <= y + 1;
 								
 						when "100" => -- S
@@ -215,7 +215,7 @@ begin
 							y <= y + 1;
 								
 						when "101" => -- SW
-							x <= x + 1;
+							x <= x - 1;
 							y <= y + 1;
 								
 						when "110" => -- W
