@@ -5,7 +5,8 @@
 - Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
 
 - Current Problems:
- * Minor Glitch if paddle moves towards ball leading into collision (ball phases through paddle)
+ * Minor Glitch
+   * if paddle moves towards ball leading into collision (ie opposite direction of ball motion), ball phases through paddle
                     
 A basic Pong-like game. 
 
