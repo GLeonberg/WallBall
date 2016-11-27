@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity pongTop is
 	port (CLOCK_50: in std_logic;
 			KEY: in std_logic_vector (3 downto 0);
-			SW: in std_logic_vector (1 downto 0);
+			SW: in std_logic_vector (2 downto 0);
 			HEX0, HEX1: out std_logic_vector (6 downto 0);
 			LEDR: out std_logic_vector (0 downto 0);
 			VGA_R, VGA_G, VGA_B: out std_logic_vector (7 downto 0);
@@ -78,10 +78,18 @@ architecture structural of pongTop is
 			xbeg, ybeg, xend, yend: out std_logic_vector(9 downto 0));
 	end component;
 	
+	-- paddle AI module
+	component paddleAI
+		port (death: in std_logic;
+				padxbeg, padxend: in std_logic_vector (9 downto 0);
+				ballxbeg, ballxend: in std_logic_vector (9 downto 0);
+				ctrl: out std_logic_vector(3 downto 0) );
+	end component;
+	
 	-- intermediate signals for wiring
-	signal CLOCK_25, CLOCK_60, horz, vert, vidOn, reset, pause, dead, point: std_logic;
+	signal CLOCK_25, CLOCK_60, horz, vert, vidOn, reset, pause, dead, point, aiCtrl: std_logic;
 	signal hcount, vcount, bxbeg, bybeg, bxend, byend, pxbeg, pybeg, pxend, pyend: std_logic_vector (9 downto 0);
-	signal bxaddr, byaddr, pyaddr: std_logic_vector (3 downto 0);
+	signal bxaddr, byaddr, pyaddr, ctrl, padCtrl: std_logic_vector (3 downto 0);
 	signal pxaddr: std_logic_vector (6 downto 0);
 	signal bpixel, ppixel: std_logic_vector (23 downto 0);
 	signal score: std_logic_vector (7 downto 0);
@@ -98,11 +106,25 @@ begin
 	VGA_BLANK_N <= '1';
 	VGA_SYNC_N <= '1';
 	
+	-- AI control selection switch
+	aiCtrl <= SW(2);
+	
+	-- AI control application determination
+	process(CLOCK_60, aiCtrl) begin
+		if rising_edge(CLOCK_60) then
+			if aiCtrl = '1' then
+				padCtrl <= ctrl;
+			else
+				padCtrl <= KEY;
+			end if;
+		end if;
+	end process;
+	
 	-- 25 mHz clock
 	clock25: clockDiv port map (CLOCK_50, CLOCK_25);
 	
 	-- vga sync controller
-	ctrl: vga_ctrl port map (CLOCK_25, hcount, vcount, horz, vert, vidOn);
+	ctr: vga_ctrl port map (CLOCK_25, hcount, vcount, horz, vert, vidOn);
 	
 	-- game state controller
 	gctrl: gameCtrl port map (SW(1), SW(0), dead, pause, reset, LEDR(0));
@@ -115,7 +137,10 @@ begin
 	scoreD0: fourBinToSevenSeg port map (score(3 downto 0), HEX0);
 	
 	-- paddle module
-	pad: paddle port map (CLOCK_60, reset, KEY, pxaddr, pyaddr, ppixel, pxbeg, pybeg, pxend, pyend);
+	pad: paddle port map (CLOCK_60, reset, padCtrl, pxaddr, pyaddr, ppixel, pxbeg, pybeg, pxend, pyend);
+	
+	-- paddle AI module
+	padAI: paddleAI port map (dead, pxbeg, pxend, bxbeg, bxend, ctrl);
 	
 	-- ball module
 	bal: ball port map (	CLOCK_60, reset, pxbeg, pybeg, pxend, pyend, bxaddr, byaddr,
