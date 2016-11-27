@@ -1,12 +1,7 @@
 # WallBall
 
-- Current Status - Beta
-
+- Current Status - Release Candidate v1.0
 - Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
-
-- Current Problems:
- * Minor Glitch
-   * if paddle moves towards ball leading into collision (ie opposite direction of ball motion), ball phases through paddle
                     
 A basic Pong-like game. 
 
