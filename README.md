@@ -21,3 +21,5 @@ When the ball touches the floor, the ball stops moving.
 Single pixel blue border for screen position adjustment
 
 There are asynchronous pause and reset controls.
+
+Toggle-able AI control mode for paddle.
