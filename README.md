@@ -17,4 +17,4 @@ Single pixel blue border for screen position adjustment
 
 There are asynchronous pause and reset controls.
 
-Toggle-able AI control mode for paddle.
+Toggle-able AI control mode for paddle with manual over-ride while in AI control mode.
