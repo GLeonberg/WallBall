@@ -96,7 +96,7 @@ architecture structural of pongTop is
 
 begin
 
-	-- game updates during vertical sync pulse
+	-- game updates during vertical sync pulse (old version)
 	CLOCK_60 <= (not vert) and (not pause);
 	
 	-- assign vga control signals
@@ -112,7 +112,7 @@ begin
 	-- AI control application determination
 	process(CLOCK_60, aiCtrl) begin
 		if rising_edge(CLOCK_60) then
-			if aiCtrl = '1' then
+			if aiCtrl = '1' and KEY = "1111" then
 				padCtrl <= ctrl;
 			else
 				padCtrl <= KEY;

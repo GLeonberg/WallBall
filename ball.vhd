@@ -107,6 +107,28 @@ begin
 						x <= x + 1;
 						y <= y - 1;
 					end if;
+					
+				-- paddle top collision (sink in glitch case)
+				elsif (y2 = (padybeg))  and (x < padxend) and (x2 > padxbeg) then
+					
+					-- left third of paddle, NW
+					if x <= padxbeg + 42 then
+						dir <= "111";
+						x <= x - 1;
+						y <= y - 1;
+						
+					-- middle third of paddle, N
+					elsif x <= padxbeg + 86 then
+						dir<= "000";
+						x <= x;
+						y <= y - 1;	
+						
+					-- right third of paddle, NE
+					else
+						dir <= "001";	
+						x <= x + 1;
+						y <= y - 1;
+					end if;
 				
 				-- paddle side collision
 				elsif ((x2 = padxbeg-1) or (x = padxend+1)) and (y < padyend) and (y2 > padybeg) then 
