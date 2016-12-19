@@ -1,7 +1,7 @@
 # WallBall
 
 - Current Status - Release Candidate v1.0
-- Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA)
+- Tested On : Terasic DE1-SOC (Altera Cyclone V FPGA), Terasic DE2-115 (Altera Cyclone IV FPGA)
                     
 A basic Pong-like game. 
 
